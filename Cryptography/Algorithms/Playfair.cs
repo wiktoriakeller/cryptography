@@ -149,28 +149,16 @@ namespace Algorithms
 
                 if (firstPos.Row == secondPos.Row)
                 {
-                    int firstCol = (firstPos.Col - 1) % KeyTableSize;
-                    int secondCol = (secondPos.Col - 1) % KeyTableSize;
-
-                    if (firstCol < 0)
-                        firstCol = KeyTableSize - 1;
-
-                    if (secondCol < 0)
-                        secondCol = KeyTableSize - 1;
+                    int firstCol = ModuloTableSize(firstPos.Col - 1);
+                    int secondCol = ModuloTableSize(secondPos.Col - 1);
 
                     firstEncrypted = keyTable[firstPos.Row, firstCol];
                     secondEncrypted = keyTable[firstPos.Row, secondCol];
                 }
                 else if (firstPos.Col == secondPos.Col)
                 {
-                    int firstRow = (firstPos.Row - 1) % KeyTableSize;
-                    int secondRow = (secondPos.Row - 1) % KeyTableSize;
-
-                    if(firstRow < 0)
-                        firstRow = KeyTableSize - 1;
-
-                    if(secondRow < 0)
-                        secondRow = KeyTableSize - 1;
+                    int firstRow = ModuloTableSize(firstPos.Row - 1);
+                    int secondRow = ModuloTableSize(secondPos.Row - 1);
 
                     firstEncrypted = keyTable[firstRow, firstPos.Col];
                     secondEncrypted = keyTable[secondRow, firstPos.Col];
@@ -188,6 +176,14 @@ namespace Algorithms
             }
 
             return encrypted.ToString();
+        }
+
+        private int ModuloTableSize(int number)
+        {
+            if (number < 0)
+                number += KeyTableSize;
+
+            return number % KeyTableSize;
         }
     }
 }
