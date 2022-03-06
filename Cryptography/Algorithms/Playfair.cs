@@ -138,7 +138,56 @@ namespace Algorithms
 
         public string Decipher(string cipher)
         {
-            throw new NotImplementedException();
+            var encrypted = new StringBuilder();
+
+            for(int i = 0; i < cipher.Length; i += 2)
+            {
+                var firstPos = letterPositions[cipher[i]];
+                var secondPos = letterPositions[cipher[i + 1]];
+                char firstEncrypted;
+                char secondEncrypted;
+
+                if (firstPos.Row == secondPos.Row)
+                {
+                    int firstCol = (firstPos.Col - 1) % KeyTableSize;
+                    int secondCol = (secondPos.Col - 1) % KeyTableSize;
+
+                    if (firstCol < 0)
+                        firstCol = KeyTableSize - 1;
+
+                    if (secondCol < 0)
+                        secondCol = KeyTableSize - 1;
+
+                    firstEncrypted = keyTable[firstPos.Row, firstCol];
+                    secondEncrypted = keyTable[firstPos.Row, secondCol];
+                }
+                else if (firstPos.Col == secondPos.Col)
+                {
+                    int firstRow = (firstPos.Row - 1) % KeyTableSize;
+                    int secondRow = (secondPos.Row - 1) % KeyTableSize;
+
+                    if(firstRow < 0)
+                        firstRow = KeyTableSize - 1;
+
+                    if(secondRow < 0)
+                        secondRow = KeyTableSize - 1;
+
+                    firstEncrypted = keyTable[firstRow, firstPos.Col];
+                    secondEncrypted = keyTable[secondRow, firstPos.Col];
+                }
+                else
+                {
+                    int firstCol = secondPos.Col;
+                    int secondCol = firstPos.Col;
+                    firstEncrypted = keyTable[firstPos.Row, firstCol];
+                    secondEncrypted = keyTable[secondPos.Row, secondCol];
+                }
+
+                encrypted.Append(firstEncrypted);
+                encrypted.Append(secondEncrypted);
+            }
+
+            return encrypted.ToString();
         }
     }
 }
