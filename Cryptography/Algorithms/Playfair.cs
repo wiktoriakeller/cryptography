@@ -57,9 +57,44 @@ namespace Algorithms
             keyTable = table;
         }
 
+        public string ConvertToPairs(string text)
+        {
+            var sb = new StringBuilder(text.Length);
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (i % 2 == 0 || (i % 2 != 0 && text[i - 1] != text[i]))
+                {
+                    sb.Append(text[i]);
+                }
+                else
+                {
+                    char extraLetter = 'x';
+                    if (text[i - 1] == 'x')
+                        extraLetter = 'z';
+
+                    sb.Append(extraLetter);
+                    sb.Append(text[i]);
+                }
+            }
+
+            if(sb.Length % 2 != 0)
+            {
+                char extraLetter = 'x';
+                if (sb[sb.Length - 1] == 'x')
+                    extraLetter = 'z';
+
+                sb.Append(extraLetter);
+            }
+
+            return sb.ToString();
+        }
+
         public string Encipher(string plaintext)
         {
-            throw new NotImplementedException();
+            plaintext = plaintext.ToLower().Replace(" ", "");
+            var cipher = new StringBuilder(ConvertToPairs(plaintext));
+            return cipher.ToString();
         }
 
         public string Decipher(string cipher)
