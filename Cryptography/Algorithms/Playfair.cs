@@ -21,7 +21,7 @@ namespace Algorithms
 
         public void GenerateKeyTable(string key)
         {
-            key = remover.RemoveDuplicates(key.ToLower().Replace("j", "i"));
+            key = remover.RemoveDuplicates(key.ToUpper().Replace("J", "I"));
             char[,] table = new char[KeyTableSize, KeyTableSize];
             IDictionary<char, int> exists = new Dictionary<char, int>();
             var sb = new StringBuilder(key.Length);
@@ -35,9 +35,9 @@ namespace Algorithms
                 }
             }
 
-            for(char c = 'a'; c <= 'z'; c++)
+            for(char c = 'A'; c <= 'Z'; c++)
             {
-                if(!exists.ContainsKey(c) && c != 'j')
+                if(!exists.ContainsKey(c) && c != 'J')
                 {
                     sb.Append(c);
                     exists[c] = 1;
@@ -71,9 +71,9 @@ namespace Algorithms
                 }
                 else
                 {
-                    char extraLetter = 'x';
-                    if (text[i - 1] == 'x')
-                        extraLetter = 'z';
+                    char extraLetter = 'X';
+                    if (text[i - 1] == 'X')
+                        extraLetter = 'Z';
 
                     sb.Append(extraLetter);
                     sb.Append(text[i]);
@@ -82,9 +82,9 @@ namespace Algorithms
 
             if(sb.Length % 2 != 0)
             {
-                char extraLetter = 'x';
-                if (sb[sb.Length - 1] == 'x')
-                    extraLetter = 'z';
+                char extraLetter = 'X';
+                if (sb[sb.Length - 1] == 'X')
+                    extraLetter = 'Z';
 
                 sb.Append(extraLetter);
             }
@@ -94,7 +94,7 @@ namespace Algorithms
 
         public string Encipher(string plaintext)
         {
-            plaintext = plaintext.ToLower().Replace(" ", "").Replace("j", "i");
+            plaintext = plaintext.ToUpper().Replace(" ", "").Replace("J", "I");
             var pairs = ConvertToPairs(plaintext);
             var cipher = new StringBuilder();
             
