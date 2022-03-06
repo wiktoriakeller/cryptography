@@ -94,7 +94,7 @@ namespace Algorithms
 
         public string Encipher(string plaintext)
         {
-            plaintext = plaintext.ToLower().Replace(" ", "");
+            plaintext = plaintext.ToLower().Replace(" ", "").Replace("j", "i");
             var pairs = ConvertToPairs(plaintext);
             var cipher = new StringBuilder();
             
@@ -107,28 +107,16 @@ namespace Algorithms
 
                 if (firstPos.Row == secondPos.Row)
                 {
-                    int firstCol = firstPos.Col + 1;
-                    int secondCol = secondPos.Col + 1;
-
-                    if (firstCol == KeyTableSize)
-                        firstCol = 0;
-
-                    if (secondCol == KeyTableSize)
-                        secondCol = 0;
+                    int firstCol = (firstPos.Col + 1) % KeyTableSize;
+                    int secondCol = (secondPos.Col + 1) % KeyTableSize;
 
                     firstCiphered = keyTable[firstPos.Row, firstCol];
                     secondCiphered = keyTable[firstPos.Row, secondCol];
                 }
                 else if (firstPos.Col == secondPos.Col)
                 {
-                    int firstRow = firstPos.Row + 1;
-                    int secondRow = secondPos.Row + 1;
-
-                    if (firstRow == KeyTableSize)
-                        firstRow = 0;
-
-                    if (secondRow == KeyTableSize)
-                        secondRow = 0;
+                    int firstRow = (firstPos.Row + 1) % KeyTableSize;
+                    int secondRow = (secondPos.Row + 1) % KeyTableSize;
 
                     firstCiphered = keyTable[firstRow, firstPos.Col];
                     secondCiphered = keyTable[secondRow, firstPos.Col];
