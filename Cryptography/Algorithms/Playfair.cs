@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Algorithms
 {
@@ -12,11 +10,13 @@ namespace Algorithms
         public char[,] KeyTable { get { return (char[,])keyTable.Clone(); } }
         private char[,] keyTable;
         private IDuplicateRemover remover;
+        private IDictionary<char, Postition> letterPositions;
 
         public Playfair(IDuplicateRemover remover)
         {
             this.remover = remover;
             keyTable = new char[KeyTableSize, KeyTableSize];
+            letterPositions = new Dictionary<char, Postition>();
         }
 
         public void GenerateKeyTable(string key)
@@ -45,11 +45,13 @@ namespace Algorithms
             }
 
             int index = 0;
+            letterPositions = new Dictionary<char, Postition>();
             for (int i = 0; i < KeyTableSize; i++)
             {
                 for (int j = 0; j < KeyTableSize; j++)
                 {
                     table[i, j] = sb[index];
+                    letterPositions[sb[index]] = new Postition(i, j);
                     index++;
                 }
             }
@@ -93,7 +95,56 @@ namespace Algorithms
         public string Encipher(string plaintext)
         {
             plaintext = plaintext.ToLower().Replace(" ", "");
-            var cipher = new StringBuilder(ConvertToPairs(plaintext));
+            var pairs = ConvertToPairs(plaintext);
+            var cipher = new StringBuilder();
+            
+            for(int i = 0; i < pairs.Length; i += 2)
+            {
+                var firstPos = letterPositions[pairs[i]];
+                var secondPos = letterPositions[pairs[i + 1]];
+                char secondCiphered;
+                char firstCiphered;
+
+                if (firstPos.Row == secondPos.Row)
+                {
+                    int firstCol = firstPos.Col + 1;
+                    int secondCol = secondPos.Col + 1;
+
+                    if (firstCol == KeyTableSize)
+                        firstCol = 0;
+
+                    if (secondCol == KeyTableSize)
+                        secondCol = 0;
+
+                    firstCiphered = keyTable[firstPos.Row, firstCol];
+                    secondCiphered = keyTable[firstPos.Row, secondCol];
+                }
+                else if (firstPos.Col == secondPos.Col)
+                {
+                    int firstRow = firstPos.Row + 1;
+                    int secondRow = secondPos.Row + 1;
+
+                    if (firstRow == KeyTableSize)
+                        firstRow = 0;
+
+                    if (secondRow == KeyTableSize)
+                        secondRow = 0;
+
+                    firstCiphered = keyTable[firstRow, firstPos.Col];
+                    secondCiphered = keyTable[secondRow, firstPos.Col];
+                }
+                else
+                {
+                    int firstCol = secondPos.Col;
+                    int secondCol = firstPos.Col;
+                    firstCiphered = keyTable[firstPos.Row, firstCol];
+                    secondCiphered = keyTable[secondPos.Row, secondCol];
+                }
+
+                cipher.Append(firstCiphered);
+                cipher.Append(secondCiphered);
+            }
+
             return cipher.ToString();
         }
 
