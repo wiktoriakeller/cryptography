@@ -1,2 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using Algorithms;
+
+var playfair = new Playfair(new DuplicateRemover());
+playfair.GenerateKeyTable("playfair example");
