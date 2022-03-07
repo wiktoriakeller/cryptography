@@ -20,14 +20,13 @@ namespace Algorithms
 
         public string Encipher(string plaintext)
         {
-            plaintext = plaintext.ToUpper().ReplaceCharacters(replacements);
-            var pairs = ConvertToPairs(plaintext);
+            var pairs = ConvertToPairs(plaintext.ToUpper().ReplaceCharacters(replacements));
             return Decode(pairs, 1);
         }
 
         public string Decipher(string cipher)
         {
-            return Decode(cipher, -1);
+            return Decode(cipher.ToUpper(), -1);
         }
 
         private string ConvertToPairs(string text)
