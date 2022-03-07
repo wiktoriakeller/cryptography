@@ -96,69 +96,37 @@ namespace Algorithms
         {
             plaintext = plaintext.ToUpper().Replace(" ", "").Replace("J", "I");
             var pairs = ConvertToPairs(plaintext);
-            var cipher = new StringBuilder();
-            
-            for(int i = 0; i < pairs.Length; i += 2)
-            {
-                var firstPos = letterPositions[pairs[i]];
-                var secondPos = letterPositions[pairs[i + 1]];
-                char secondCiphered;
-                char firstCiphered;
-
-                if (firstPos.Row == secondPos.Row)
-                {
-                    int firstCol = (firstPos.Col + 1) % KeyTableSize;
-                    int secondCol = (secondPos.Col + 1) % KeyTableSize;
-
-                    firstCiphered = keyTable[firstPos.Row, firstCol];
-                    secondCiphered = keyTable[firstPos.Row, secondCol];
-                }
-                else if (firstPos.Col == secondPos.Col)
-                {
-                    int firstRow = (firstPos.Row + 1) % KeyTableSize;
-                    int secondRow = (secondPos.Row + 1) % KeyTableSize;
-
-                    firstCiphered = keyTable[firstRow, firstPos.Col];
-                    secondCiphered = keyTable[secondRow, firstPos.Col];
-                }
-                else
-                {
-                    int firstCol = secondPos.Col;
-                    int secondCol = firstPos.Col;
-                    firstCiphered = keyTable[firstPos.Row, firstCol];
-                    secondCiphered = keyTable[secondPos.Row, secondCol];
-                }
-
-                cipher.Append(firstCiphered);
-                cipher.Append(secondCiphered);
-            }
-
-            return cipher.ToString();
+            return Decode(pairs, 1);
         }
 
         public string Decipher(string cipher)
         {
-            var encrypted = new StringBuilder();
+            return Decode(cipher, -1);
+        }
 
-            for(int i = 0; i < cipher.Length; i += 2)
+        private string Decode(string text, int shift)
+        {
+            var decoded = new StringBuilder();
+
+            for (int i = 0; i < text.Length; i += 2)
             {
-                var firstPos = letterPositions[cipher[i]];
-                var secondPos = letterPositions[cipher[i + 1]];
+                var firstPos = letterPositions[text[i]];
+                var secondPos = letterPositions[text[i + 1]];
                 char firstEncrypted;
                 char secondEncrypted;
 
                 if (firstPos.Row == secondPos.Row)
                 {
-                    int firstCol = ModuloTableSize(firstPos.Col - 1);
-                    int secondCol = ModuloTableSize(secondPos.Col - 1);
+                    int firstCol = Modulo(firstPos.Col + shift);
+                    int secondCol = Modulo(secondPos.Col + shift);
 
                     firstEncrypted = keyTable[firstPos.Row, firstCol];
                     secondEncrypted = keyTable[firstPos.Row, secondCol];
                 }
                 else if (firstPos.Col == secondPos.Col)
                 {
-                    int firstRow = ModuloTableSize(firstPos.Row - 1);
-                    int secondRow = ModuloTableSize(secondPos.Row - 1);
+                    int firstRow = Modulo(firstPos.Row + shift);
+                    int secondRow = Modulo(secondPos.Row + shift);
 
                     firstEncrypted = keyTable[firstRow, firstPos.Col];
                     secondEncrypted = keyTable[secondRow, firstPos.Col];
@@ -171,14 +139,14 @@ namespace Algorithms
                     secondEncrypted = keyTable[secondPos.Row, secondCol];
                 }
 
-                encrypted.Append(firstEncrypted);
-                encrypted.Append(secondEncrypted);
+                decoded.Append(firstEncrypted);
+                decoded.Append(secondEncrypted);
             }
 
-            return encrypted.ToString();
+            return decoded.ToString();
         }
 
-        private int ModuloTableSize(int number)
+        private int Modulo(int number)
         {
             if (number < 0)
                 number += KeyTableSize;
