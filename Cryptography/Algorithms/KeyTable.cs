@@ -8,12 +8,10 @@ namespace Algorithms
         public int KeyTableSize { get; } = 5;
         public char[,] Table { get { return (char[,])table.Clone(); } }
         private char[,] table;
-        private IDuplicateRemover remover;
         private IDictionary<char, Position> letterPositions;
 
-        public KeyTable(IDuplicateRemover remover)
+        public KeyTable()
         {
-            this.remover = remover;
             letterPositions = new Dictionary<char, Position>();
             table = new char[KeyTableSize, KeyTableSize];
         }
@@ -30,17 +28,21 @@ namespace Algorithms
 
         public void GenerateKeyTable(string key)
         {
-            key = remover.RemoveDuplicates(key.ToUpper().Replace("J", "I"));
-            char[,] table = new char[KeyTableSize, KeyTableSize];
             IDictionary<char, int> exists = new Dictionary<char, int>();
+            char[,] table = new char[KeyTableSize, KeyTableSize];
             var sb = new StringBuilder(key.Length);
+            char letter;
 
             for (int i = 0; i < key.Length; i++)
             {
-                if (key[i] != ' ' && char.IsLetter(key[i]))
+                letter = char.ToUpper(key[i]);
+                if (letter == 'J')
+                    letter = 'I';
+
+                if (!exists.ContainsKey(letter) && letter != ' ' && char.IsLetter(letter))
                 {
-                    sb.Append(key[i]);
-                    exists[key[i]] = 1;
+                    sb.Append(letter);
+                    exists[letter] = 1;
                 }
             }
 

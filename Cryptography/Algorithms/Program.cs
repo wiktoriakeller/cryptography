@@ -1,10 +1,10 @@
 ﻿using Algorithms;
 
-var playfair = new Playfair(new KeyTable(new DuplicateRemover()));
+var playfair = new Playfair(new KeyTable());
 
 playfair.GenerateKeyTable("playfair example");
-Console.WriteLine(playfair.Encipher("hide the gold in the tree stump"));
-Console.WriteLine(playfair.Decipher("BMODZBXDNABEKUDMUIXMMOUVIF"));
+Console.WriteLine(playfair.Encipher("playfair is great"));
+Console.WriteLine(playfair.Decipher("LAYFPYREMKCXDEWI"));
 
 
 /*

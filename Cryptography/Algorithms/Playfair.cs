@@ -5,10 +5,12 @@ namespace Algorithms
     public class Playfair : IEncipher, IDecipher
     {
         public IKeyTable KeyTable { get; set; }
+        private readonly IDictionary<string, string> replacements;
 
         public Playfair(IKeyTable table)
         {
             KeyTable = table;
+            replacements = new Dictionary<string, string>() { {" ", ""}, {"J", "I"} };
         }
 
         public void GenerateKeyTable(string key)
@@ -18,7 +20,7 @@ namespace Algorithms
 
         public string Encipher(string plaintext)
         {
-            plaintext = plaintext.ToUpper().Replace(" ", "").Replace("J", "I");
+            plaintext = plaintext.ToUpper().ReplaceCharacters(replacements);
             var pairs = ConvertToPairs(plaintext);
             return Decode(pairs, 1);
         }
@@ -47,9 +49,7 @@ namespace Algorithms
             }
 
             if (pairs.Length % 2 != 0)
-            {
                 pairs.Append(extraLetter);
-            }
 
             return pairs.ToString();
         }
