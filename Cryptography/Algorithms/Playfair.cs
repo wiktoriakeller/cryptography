@@ -10,7 +10,7 @@ namespace Algorithms
         public Playfair(IKeyTable table)
         {
             KeyTable = table;
-            replacements = new Dictionary<string, string>() { {" ", ""}, {"J", "I"} };
+            replacements = new Dictionary<string, string>() { { " ", "" }, { "J", "I" }, { ".", "" }, { ",", "" }, { "!", "" }, {"(", "" }, {")", ""} };
         }
 
         public void GenerateKeyTable(string key)
