@@ -1,10 +1,10 @@
 ﻿using System.Text;
 
-namespace Algorithms
+namespace Algorithms.Playfair
 {
     public class Playfair : IEncipher, IDecipher
     {
-        private IKeyTable keyTable { get; set; }
+        private IKeyTable keyTable;
 
         public Playfair(IKeyTable table)
         {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace Algorithms
+namespace Algorithms.Playfair
 {
     public class KeyTable : IKeyTable
     {

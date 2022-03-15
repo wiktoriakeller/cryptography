@@ -1,4 +1,5 @@
 ﻿using Algorithms;
+using Algorithms.Playfair;
 
 var playfair = new Playfair(new KeyTable());
 

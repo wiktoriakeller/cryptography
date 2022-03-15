@@ -1,4 +1,4 @@
-﻿namespace Algorithms
+﻿namespace Algorithms.Playfair
 {
     public interface IKeyTable
     {
