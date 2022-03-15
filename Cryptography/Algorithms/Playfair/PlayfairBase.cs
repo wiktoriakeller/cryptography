@@ -32,7 +32,7 @@ namespace Algorithms.Playfair
 
         protected abstract string PreparePlaintext(string plaintext);
 
-        protected abstract string Decode(string text, int shif);
+        protected abstract string Decode(string text, int shift);
 
         protected int Modulo(int number, bool row = false)
         {

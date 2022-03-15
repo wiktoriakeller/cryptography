@@ -5,10 +5,11 @@ namespace Algorithms.Playfair
 {
     public class KeyTable : IKeyTable
     {
-        public int KeyTableCols { get; } = 5;
-        public int KeyTableRows { get; } = 5;
+        public virtual int KeyTableCols { get; } = 5;
+        public virtual int KeyTableRows { get; } = 5;
         public char[,] Table { get { return (char[,])table.Clone(); } }
         
+        protected char[] extraLetters;
         private char[,] table;
         private IDictionary<char, Position> letterPositions;
 
@@ -54,6 +55,18 @@ namespace Algorithms.Playfair
                 {
                     sb.Append(c);
                     exists[c] = 1;
+                }
+            }
+
+            if(extraLetters is not null)
+            {
+                for (int i = 0; i < extraLetters.Length; i++)
+                {
+                    if (!exists.ContainsKey(extraLetters[i]))
+                    {
+                        sb.Append(extraLetters[i]);
+                        exists[extraLetters[i]] = 1;
+                    }
                 }
             }
 
