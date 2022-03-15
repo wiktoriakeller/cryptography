@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Text;
 
-namespace Algorithms
+namespace Algorithms.Playfair
 {
     public class KeyTable : IKeyTable
     {
-        public int KeyTableSize { get; } = 5;
+        public virtual int KeyTableCols { get; } = 5;
+        public virtual int KeyTableRows { get; } = 5;
         public char[,] Table { get { return (char[,])table.Clone(); } }
+        
+        protected char[] extraLetters;
         private char[,] table;
         private IDictionary<char, Position> letterPositions;
 
         public KeyTable()
         {
+            table = new char[KeyTableRows, KeyTableCols];
             letterPositions = new Dictionary<char, Position>();
-            table = new char[KeyTableSize, KeyTableSize];
         }
 
         public Position GetPosition(char c)
@@ -29,7 +32,7 @@ namespace Algorithms
         public void GenerateKeyTable(string key)
         {
             IDictionary<char, int> exists = new Dictionary<char, int>();
-            char[,] table = new char[KeyTableSize, KeyTableSize];
+            char[,] table = new char[KeyTableRows, KeyTableCols];
             var sb = new StringBuilder(key.Length);
             char letter;
 
@@ -55,11 +58,23 @@ namespace Algorithms
                 }
             }
 
+            if(extraLetters is not null)
+            {
+                for (int i = 0; i < extraLetters.Length; i++)
+                {
+                    if (!exists.ContainsKey(extraLetters[i]))
+                    {
+                        sb.Append(extraLetters[i]);
+                        exists[extraLetters[i]] = 1;
+                    }
+                }
+            }
+
             int index = 0;
             letterPositions = new Dictionary<char, Position>();
-            for (int i = 0; i < KeyTableSize; i++)
+            for (int i = 0; i < KeyTableRows; i++)
             {
-                for (int j = 0; j < KeyTableSize; j++)
+                for (int j = 0; j < KeyTableCols; j++)
                 {
                     table[i, j] = sb[index];
                     letterPositions[sb[index]] = new Position(i, j);
