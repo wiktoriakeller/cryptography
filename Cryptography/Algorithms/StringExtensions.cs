@@ -5,17 +5,15 @@ namespace Algorithms
 {
     public static class StringExtensions
     {
-        public static string ReplaceCharacters(this string s, IDictionary<string, string> replacements)
+        public static string DiscardCharacters(this string s, HashSet<char> lettersToDiscard)
         {
             var sb = new StringBuilder();
-            string letter;
             for(int i = 0; i < s.Length; i++)
             {
-                letter = s[i].ToString();
-                if(replacements.ContainsKey(letter)) 
-                    letter = replacements[letter];
+                if (lettersToDiscard.Contains(s[i]))
+                    continue;
 
-                sb.Append(letter);
+                sb.Append(s[i]);
             }
 
             return sb.ToString();

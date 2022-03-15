@@ -5,10 +5,19 @@ namespace Algorithms.Playfair
     public class Playfair : IEncipher, IDecipher
     {
         private IKeyTable keyTable;
+        private readonly IDictionary<char, char> lettersToReplace = new Dictionary<char, char>() { { 'J', 'I' } };
+        private readonly HashSet<char> lettersToDiscard = new HashSet<char>() { ' ', '.', ',', '!', '(', ')', '?', '-', ':' };
+        private bool leaveOnlyLetters;
 
         public Playfair(IKeyTable table)
         {
+            leaveOnlyLetters = true;
             keyTable = table;
+        }
+
+        public void LeaveOnlyLetters(bool leaveOnlyLetters)
+        {
+            this.leaveOnlyLetters = leaveOnlyLetters;
         }
 
         public void GenerateKeyTable(string key)
@@ -18,8 +27,8 @@ namespace Algorithms.Playfair
 
         public string Encipher(string plaintext)
         {
-            var pairs = ConvertToPairs(plaintext.ToUpper().ReplaceCharacters(keyTable.GetLettersReplacements()));
-            return Decode(pairs, 1);
+            plaintext = PreparePlaintext(plaintext.ToUpper());
+            return Decode(plaintext, 1);
         }
 
         public string Decipher(string cipher)
@@ -27,38 +36,82 @@ namespace Algorithms.Playfair
             return Decode(cipher.ToUpper(), -1);
         }
 
-        private string ConvertToPairs(string text)
+        private string PreparePlaintext(string text)
         {
-            var pairs = new StringBuilder(text.Length);
+            var newText = new StringBuilder(text.Length);
             char extraLetter = 'X';
+            int lastLetterIndex = 0;
+            int length = 0;
 
-            for (int i = 0; i < text.Length; i++)
+            for(int i = 0; i < text.Length; i++)
             {
-                if (i % 2 == 0 || (i % 2 != 0 && text[i - 1] != text[i]))
+                if(lettersToDiscard.Contains(text[i]))
                 {
-                    pairs.Append(text[i]);
+                    if(!leaveOnlyLetters)
+                        newText.Append(text[i]);
                 }
-                else
+                else if(lettersToReplace.ContainsKey(text[i]))
                 {
-                    pairs.Append(extraLetter);
-                    pairs.Append(text[i]);
+                    newText.Append(lettersToReplace[text[i]]);
+                    length++;
+                }
+                else if(char.IsLetter(text[i]))
+                {
+                    newText.Append(text[i]);
+                    lastLetterIndex = i;
+                    length++;
                 }
             }
 
-            if (pairs.Length % 2 != 0)
-                pairs.Append(extraLetter);
+            if (length % 2 != 0)
+                newText.Insert(lastLetterIndex + 1, extraLetter);
 
-            return pairs.ToString();
+            return newText.ToString();
         }
 
         private string Decode(string text, int shift)
         {
             var decoded = new StringBuilder();
+            var tmpSb = new StringBuilder();
+            int add = 2;
+            int firstIndex = -1;
+            int secondIndex = -1;
 
-            for (int i = 0; i < text.Length; i += 2)
+            if (!leaveOnlyLetters)
+                add = 1;
+
+            for (int i = 0; i < text.Length; i += add)
             {
-                var firstPos = keyTable.GetPosition(text[i]);
-                var secondPos = keyTable.GetPosition(text[i + 1]);
+                if(!leaveOnlyLetters)
+                {
+                    if (lettersToDiscard.Contains(text[i]))
+                    {
+                        if (firstIndex != -1)
+                            tmpSb.Append(text[i]);
+                        else
+                            decoded.Append(text[i]);
+
+                        continue;
+                    }
+
+                    if(firstIndex == -1)
+                    {
+                        firstIndex = i;
+                        continue;
+                    }
+                    else if(secondIndex == -1)
+                    {
+                        secondIndex = i;
+                    }
+                }
+                else
+                {
+                    firstIndex = i;
+                    secondIndex = i + 1;
+                }
+
+                var firstPos = keyTable.GetPosition(text[firstIndex]);
+                var secondPos = keyTable.GetPosition(text[secondIndex]);
                 char firstEncrypted;
                 char secondEncrypted;
 
@@ -87,7 +140,17 @@ namespace Algorithms.Playfair
                 }
 
                 decoded.Append(firstEncrypted);
+
+                if(tmpSb.Length > 0)
+                {
+                    decoded.Append(tmpSb);
+                    tmpSb.Clear();
+                }
+
                 decoded.Append(secondEncrypted);
+
+                firstIndex = -1;
+                secondIndex = -1;
             }
 
             return decoded.ToString();

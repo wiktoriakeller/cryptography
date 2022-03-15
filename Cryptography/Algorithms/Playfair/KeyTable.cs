@@ -11,13 +11,11 @@ namespace Algorithms.Playfair
         
         private char[,] table;
         private IDictionary<char, Position> letterPositions;
-        private readonly IDictionary<string, string> replacements;
 
         public KeyTable()
         {
             table = new char[KeyTableRows, KeyTableCols];
             letterPositions = new Dictionary<char, Position>();
-            replacements = new Dictionary<string, string>() { { " ", "" }, { "J", "I" }, { ".", "" }, { ",", "" }, { "!", "" }, { "(", "" }, { ")", "" } };
         }
 
         public Position GetPosition(char c)
@@ -28,11 +26,6 @@ namespace Algorithms.Playfair
         public char GetLetter(int row, int col)
         {
             return table[row, col];
-        }
-
-        public IDictionary<string, string> GetLettersReplacements()
-        {
-            return replacements;
         }
 
         public void GenerateKeyTable(string key)

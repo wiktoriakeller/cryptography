@@ -8,6 +8,5 @@
         public void GenerateKeyTable(string key);
         public Position GetPosition(char c);
         public char GetLetter(int row, int col);
-        public IDictionary<string, string> GetLettersReplacements();
     }
 }

@@ -1,10 +1,9 @@
-﻿using Algorithms;
-using Algorithms.Playfair;
+﻿using Algorithms.Playfair;
 
 var playfair = new Playfair(new KeyTable());
-
+playfair.LeaveOnlyLetters(false);
 var key = "playfair";
-var plainText = "Like most classical ciphers, the Playfair cipher can be easily cracked if there is enough text.";
+var plainText = "Like most classical ciphers, the Playfair cipher can be easily cracked if there is enough text lol.";
 //var cipherText = "PRMGGTTNRYYQNCBYYREIKGCOQMNIAYFPPBBDEIKGBDPQIHHPNCAFDBYBMGIRDZKGIGCNNUNVHKNMZS";
 
 playfair.GenerateKeyTable(key);
