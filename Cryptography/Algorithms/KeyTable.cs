@@ -5,15 +5,19 @@ namespace Algorithms
 {
     public class KeyTable : IKeyTable
     {
-        public int KeyTableSize { get; } = 5;
+        public int KeyTableCols { get; } = 5;
+        public int KeyTableRows { get; } = 5;
         public char[,] Table { get { return (char[,])table.Clone(); } }
+        
         private char[,] table;
         private IDictionary<char, Position> letterPositions;
+        private readonly IDictionary<string, string> replacements;
 
         public KeyTable()
         {
+            table = new char[KeyTableRows, KeyTableCols];
             letterPositions = new Dictionary<char, Position>();
-            table = new char[KeyTableSize, KeyTableSize];
+            replacements = new Dictionary<string, string>() { { " ", "" }, { "J", "I" }, { ".", "" }, { ",", "" }, { "!", "" }, { "(", "" }, { ")", "" } };
         }
 
         public Position GetPosition(char c)
@@ -26,10 +30,15 @@ namespace Algorithms
             return table[row, col];
         }
 
+        public IDictionary<string, string> GetLettersReplacements()
+        {
+            return replacements;
+        }
+
         public void GenerateKeyTable(string key)
         {
             IDictionary<char, int> exists = new Dictionary<char, int>();
-            char[,] table = new char[KeyTableSize, KeyTableSize];
+            char[,] table = new char[KeyTableRows, KeyTableCols];
             var sb = new StringBuilder(key.Length);
             char letter;
 
@@ -57,9 +66,9 @@ namespace Algorithms
 
             int index = 0;
             letterPositions = new Dictionary<char, Position>();
-            for (int i = 0; i < KeyTableSize; i++)
+            for (int i = 0; i < KeyTableRows; i++)
             {
-                for (int j = 0; j < KeyTableSize; j++)
+                for (int j = 0; j < KeyTableCols; j++)
                 {
                     table[i, j] = sb[index];
                     letterPositions[sb[index]] = new Position(i, j);

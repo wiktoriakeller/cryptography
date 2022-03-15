@@ -4,23 +4,21 @@ namespace Algorithms
 {
     public class Playfair : IEncipher, IDecipher
     {
-        public IKeyTable KeyTable { get; set; }
-        private readonly IDictionary<string, string> replacements;
+        private IKeyTable keyTable { get; set; }
 
         public Playfair(IKeyTable table)
         {
-            KeyTable = table;
-            replacements = new Dictionary<string, string>() { { " ", "" }, { "J", "I" }, { ".", "" }, { ",", "" }, { "!", "" }, {"(", "" }, {")", ""} };
+            keyTable = table;
         }
 
         public void GenerateKeyTable(string key)
         {
-            KeyTable.GenerateKeyTable(key);
+            keyTable.GenerateKeyTable(key);
         }
 
         public string Encipher(string plaintext)
         {
-            var pairs = ConvertToPairs(plaintext.ToUpper().ReplaceCharacters(replacements));
+            var pairs = ConvertToPairs(plaintext.ToUpper().ReplaceCharacters(keyTable.GetLettersReplacements()));
             return Decode(pairs, 1);
         }
 
@@ -59,8 +57,8 @@ namespace Algorithms
 
             for (int i = 0; i < text.Length; i += 2)
             {
-                var firstPos = KeyTable.GetPosition(text[i]);
-                var secondPos = KeyTable.GetPosition(text[i + 1]);
+                var firstPos = keyTable.GetPosition(text[i]);
+                var secondPos = keyTable.GetPosition(text[i + 1]);
                 char firstEncrypted;
                 char secondEncrypted;
 
@@ -69,23 +67,23 @@ namespace Algorithms
                     int firstCol = Modulo(firstPos.Col + shift);
                     int secondCol = Modulo(secondPos.Col + shift);
 
-                    firstEncrypted = KeyTable.GetLetter(firstPos.Row, firstCol);
-                    secondEncrypted = KeyTable.GetLetter(firstPos.Row, secondCol);
+                    firstEncrypted = keyTable.GetLetter(firstPos.Row, firstCol);
+                    secondEncrypted = keyTable.GetLetter(firstPos.Row, secondCol);
                 }
                 else if (firstPos.Col == secondPos.Col)
                 {
                     int firstRow = Modulo(firstPos.Row + shift);
                     int secondRow = Modulo(secondPos.Row + shift);
 
-                    firstEncrypted = KeyTable.GetLetter(firstRow, firstPos.Col);
-                    secondEncrypted = KeyTable.GetLetter(secondRow, firstPos.Col);
+                    firstEncrypted = keyTable.GetLetter(firstRow, firstPos.Col);
+                    secondEncrypted = keyTable.GetLetter(secondRow, firstPos.Col);
                 }
                 else
                 {
                     int firstCol = secondPos.Col;
                     int secondCol = firstPos.Col;
-                    firstEncrypted = KeyTable.GetLetter(firstPos.Row, firstCol);
-                    secondEncrypted = KeyTable.GetLetter(secondPos.Row, secondCol);
+                    firstEncrypted = keyTable.GetLetter(firstPos.Row, firstCol);
+                    secondEncrypted = keyTable.GetLetter(secondPos.Row, secondCol);
                 }
 
                 decoded.Append(firstEncrypted);
@@ -95,12 +93,16 @@ namespace Algorithms
             return decoded.ToString();
         }
 
-        private int Modulo(int number)
+        private int Modulo(int number, bool row = false)
         {
-            if (number < 0)
-                number += KeyTable.KeyTableSize;
+            int size = keyTable.KeyTableRows;
+            if (!row)
+                size = keyTable.KeyTableCols;
 
-            return number % KeyTable.KeyTableSize;
+            if (number < 0)
+                number += size;
+
+            return number % size;
         }
     }
 }

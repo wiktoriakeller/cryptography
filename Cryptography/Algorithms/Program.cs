@@ -4,14 +4,17 @@ var playfair = new Playfair(new KeyTable());
 
 var key = "playfair";
 var plainText = "Like most classical ciphers, the Playfair cipher can be easily cracked if there is enough text.";
-var cipherText = "PRMGGTTNRYYQNCBYYREIKGCOQMNIAYFPPBBDEIKGBDPQIHHPNCAFDBYBMGIRDZKGIGCNNUNVHKNMZS";
+//var cipherText = "PRMGGTTNRYYQNCBYYREIKGCOQMNIAYFPPBBDEIKGBDPQIHHPNCAFDBYBMGIRDZKGIGCNNUNVHKNMZS";
 
 playfair.GenerateKeyTable(key);
 
+var enciphered = playfair.Encipher(plainText);
+var deciphered = playfair.Decipher(enciphered);
+
 Console.WriteLine($"Key: {key}");
 Console.WriteLine($"Plain text: {plainText}");
-Console.WriteLine($"Encrypted text: {playfair.Encipher(plainText)}");
-Console.WriteLine($"Decrypted text: {playfair.Decipher(cipherText)}");
+Console.WriteLine($"Encrypted text: {enciphered}");
+Console.WriteLine($"Decrypted text: {deciphered}");
 
 /*
 var type = args[0].ToLower();
