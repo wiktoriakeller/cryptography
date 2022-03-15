@@ -2,17 +2,14 @@
 
 namespace Algorithms.Playfair
 {
-    public class Playfair : IEncipher, IDecipher
+    public class Playfair : PlayfairBase
     {
-        private IKeyTable keyTable;
-        private readonly IDictionary<char, char> lettersToReplace = new Dictionary<char, char>() { { 'J', 'I' } };
-        private readonly HashSet<char> lettersToDiscard = new HashSet<char>() { ' ', '.', ',', '!', '(', ')', '?', '-', ':' };
         private bool leaveOnlyLetters;
 
-        public Playfair(IKeyTable table)
+        public Playfair(IKeyTable table) : base(table)
         {
             leaveOnlyLetters = true;
-            keyTable = table;
+            lettersToDiscard = new HashSet<char>() { ' ', '.', ',', '!', '(', ')', '?', '-', ':', ';' };
         }
 
         public void LeaveOnlyLetters(bool leaveOnlyLetters)
@@ -20,44 +17,28 @@ namespace Algorithms.Playfair
             this.leaveOnlyLetters = leaveOnlyLetters;
         }
 
-        public void GenerateKeyTable(string key)
+        protected override string PreparePlaintext(string plaintext)
         {
-            keyTable.GenerateKeyTable(key);
-        }
-
-        public string Encipher(string plaintext)
-        {
-            plaintext = PreparePlaintext(plaintext.ToUpper());
-            return Decode(plaintext, 1);
-        }
-
-        public string Decipher(string cipher)
-        {
-            return Decode(cipher.ToUpper(), -1);
-        }
-
-        private string PreparePlaintext(string text)
-        {
-            var newText = new StringBuilder(text.Length);
+            var newText = new StringBuilder(plaintext.Length);
             char extraLetter = 'X';
             int lastLetterIndex = 0;
             int length = 0;
 
-            for(int i = 0; i < text.Length; i++)
+            for(int i = 0; i < plaintext.Length; i++)
             {
-                if(lettersToDiscard.Contains(text[i]))
+                if(lettersToDiscard.Contains(plaintext[i]))
                 {
                     if(!leaveOnlyLetters)
-                        newText.Append(text[i]);
+                        newText.Append(plaintext[i]);
                 }
-                else if(lettersToReplace.ContainsKey(text[i]))
+                else if(lettersToReplace.ContainsKey(plaintext[i]))
                 {
-                    newText.Append(lettersToReplace[text[i]]);
+                    newText.Append(lettersToReplace[plaintext[i]]);
                     length++;
                 }
-                else if(char.IsLetter(text[i]))
+                else if(char.IsLetter(plaintext[i]))
                 {
-                    newText.Append(text[i]);
+                    newText.Append(plaintext[i]);
                     lastLetterIndex = i;
                     length++;
                 }
@@ -69,7 +50,7 @@ namespace Algorithms.Playfair
             return newText.ToString();
         }
 
-        private string Decode(string text, int shift)
+        protected override string Decode(string text, int shift)
         {
             var decoded = new StringBuilder();
             var tmpSb = new StringBuilder();
@@ -154,18 +135,6 @@ namespace Algorithms.Playfair
             }
 
             return decoded.ToString();
-        }
-
-        private int Modulo(int number, bool row = false)
-        {
-            int size = keyTable.KeyTableRows;
-            if (!row)
-                size = keyTable.KeyTableCols;
-
-            if (number < 0)
-                number += size;
-
-            return number % size;
         }
     }
 }
