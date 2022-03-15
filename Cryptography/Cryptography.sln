@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Algorithms", "Algorithms\Algorithms.csproj", "{40457053-C7F4-4A55-82A7-16E3B19D0CEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptographyAPI", "CryptographyAPI\CryptographyAPI.csproj", "{E695EB50-950A-44F1-92D3-5920A9D4ADB8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptographyAPI", "CryptographyAPI\CryptographyAPI.csproj", "{E695EB50-950A-44F1-92D3-5920A9D4ADB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
