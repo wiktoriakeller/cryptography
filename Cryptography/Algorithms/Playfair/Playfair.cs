@@ -23,29 +23,44 @@ namespace Algorithms.Playfair
             char extraLetter = 'X';
             int lastLetterIndex = 0;
             int length = 0;
+            char lastLetter = ' ';
 
-            for(int i = 0; i < plaintext.Length; i++)
+            for (int i = 0; i < plaintext.Length; i++)
             {
-                if(lettersToDiscard.Contains(plaintext[i]))
+                if (lettersToDiscard.Contains(plaintext[i]))
                 {
-                    if(!leaveOnlyLetters)
+                    if (!leaveOnlyLetters)
                         newText.Append(plaintext[i]);
                 }
-                else if(lettersToReplace.ContainsKey(plaintext[i]))
+                else if (char.IsLetter(plaintext[i]))
                 {
-                    newText.Append(lettersToReplace[plaintext[i]]);
-                    length++;
-                }
-                else if(char.IsLetter(plaintext[i]))
-                {
-                    newText.Append(plaintext[i]);
                     lastLetterIndex = i;
+                    var letter = plaintext[i];
+                    if(lettersToReplace.ContainsKey(letter))
+                        letter = lettersToReplace[letter];
+
+                    if(letter == lastLetter)
+                    {
+                        newText.Append(extraLetter);
+                        length++;
+                    }
+
+                    newText.Append(letter);
+                    lastLetter = letter;
                     length++;
                 }
             }
-
-            if (length % 2 != 0)
-                newText.Insert(lastLetterIndex + 1, extraLetter);
+            
+            if(leaveOnlyLetters)
+            {
+                if (length % 2 != 0)
+                    newText.Insert(newText.Length, extraLetter);
+            }
+            else
+            {
+                if (length % 2 != 0)
+                    newText.Insert(lastLetterIndex + 1, extraLetter);
+            }
 
             return newText.ToString();
         }
