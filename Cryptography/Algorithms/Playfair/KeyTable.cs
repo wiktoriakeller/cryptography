@@ -12,11 +12,13 @@ namespace Algorithms.Playfair
         protected char[] extraLetters;
         private char[,] table;
         private IDictionary<char, Position> letterPositions;
+        private HashSet<char> exists;
 
         public KeyTable()
         {
             table = new char[KeyTableRows, KeyTableCols];
             letterPositions = new Dictionary<char, Position>();
+            exists = new HashSet<char>();
         }
 
         public Position GetPosition(char c)
@@ -29,9 +31,14 @@ namespace Algorithms.Playfair
             return table[row, col];
         }
 
+        public bool LetterExist(char letter)
+        {
+            return exists.Contains(letter);
+        }
+
         public void GenerateKeyTable(string key)
         {
-            IDictionary<char, int> exists = new Dictionary<char, int>();
+            exists.Clear();
             char[,] table = new char[KeyTableRows, KeyTableCols];
             var sb = new StringBuilder(key.Length);
             char letter;
@@ -42,19 +49,19 @@ namespace Algorithms.Playfair
                 if (letter == 'J')
                     letter = 'I';
 
-                if (!exists.ContainsKey(letter) && letter != ' ' && char.IsLetter(letter))
+                if (!exists.Contains(letter) && char.IsLetter(letter))
                 {
                     sb.Append(letter);
-                    exists[letter] = 1;
+                    exists.Add(letter);
                 }
             }
 
             for (char c = 'A'; c <= 'Z'; c++)
             {
-                if (!exists.ContainsKey(c) && c != 'J')
+                if (!exists.Contains(c) && c != 'J')
                 {
                     sb.Append(c);
-                    exists[c] = 1;
+                    exists.Add(c);
                 }
             }
 
@@ -62,10 +69,10 @@ namespace Algorithms.Playfair
             {
                 for (int i = 0; i < extraLetters.Length; i++)
                 {
-                    if (!exists.ContainsKey(extraLetters[i]))
+                    if (!exists.Contains(extraLetters[i]))
                     {
                         sb.Append(extraLetters[i]);
-                        exists[extraLetters[i]] = 1;
+                        exists.Add(extraLetters[i]);
                     }
                 }
             }

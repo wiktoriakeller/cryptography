@@ -5,10 +5,7 @@ namespace Algorithms.Playfair
 {
     public class PlayfairExtended : PlayfairBase
     {
-        public PlayfairExtended(IKeyTable table) : base(table)
-        {
-            lettersToDiscard = new HashSet<char> { '(', ')', ':', ';' };
-        }
+        public PlayfairExtended(IKeyTable table) : base(table) { }
 
         protected override string Decode(string text, int shift)
         {
@@ -54,34 +51,68 @@ namespace Algorithms.Playfair
 
         protected override string PreparePlaintext(string plaintext)
         {
-            var newText = new StringBuilder(plaintext.Length);
+            var clearedText = new StringBuilder(plaintext.Length);
+            var preparedText = new StringBuilder(plaintext.Length);
             char extraLetter = 'X';
-            int lastLetterIndex = 0;
+            char secondExtraLetter = 'Z';
             int length = 0;
 
-            for (int i = 0; i < plaintext.Length; i++)
+            for(int i = 0; i < plaintext.Length; i++)
             {
-                if (lettersToDiscard.Contains(plaintext[i]))
+                if (keyTable.LetterExist(plaintext[i]))
                 {
-                    continue;
-                }
-                else if (lettersToReplace.ContainsKey(plaintext[i]))
-                {
-                    newText.Append(lettersToReplace[plaintext[i]]);
-                    length++;
-                }
-                else
-                {
-                    newText.Append(plaintext[i]);
-                    lastLetterIndex = i;
-                    length++;
+                    var letterToAdd = plaintext[i];
+                    if(lettersToReplace.ContainsKey(plaintext[i]))
+                        letterToAdd = lettersToReplace[letterToAdd];
+
+                    clearedText.Append(letterToAdd);
                 }
             }
 
-            if (length % 2 != 0)
-                newText.Insert(lastLetterIndex + 1, extraLetter);
+            int index = 1;
+            if(clearedText.Length == 1)
+                preparedText.Append(clearedText[0]);
 
-            return newText.ToString();
+            while(index < clearedText.Length)
+            {
+                preparedText.Append(clearedText[index - 1]);
+
+                if (clearedText[index] == clearedText[index - 1])
+                {
+                    var letterToAppend = extraLetter;
+                    if (clearedText[index] == letterToAppend)
+                        letterToAppend = secondExtraLetter;
+
+                    preparedText.Append(letterToAppend);
+                    index += 1;
+                }
+                else
+                {
+                    preparedText.Append(clearedText[index]);
+                    index += 2;
+                }
+
+                length += 2;
+            }
+
+            if(clearedText.Length % 2 != 0)
+            {
+                preparedText.Append(clearedText[^1]);
+                length++;
+            }
+
+            if (length % 2 != 0)
+            {
+                var letter = preparedText[^1];
+                var letterToAppend = extraLetter;
+
+                if (letter == letterToAppend)
+                    letterToAppend = secondExtraLetter;
+
+                preparedText.Append(letterToAppend);
+            }
+
+            return preparedText.ToString();
         }
     }
 }

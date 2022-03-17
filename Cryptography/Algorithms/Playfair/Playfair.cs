@@ -9,7 +9,6 @@ namespace Algorithms.Playfair
         public Playfair(IKeyTable table) : base(table)
         {
             leaveOnlyLetters = true;
-            lettersToDiscard = new HashSet<char>() { ' ', '.', ',', '!', '(', ')', '?', '-', ':', ';' };
         }
 
         public void LeaveOnlyLetters(bool leaveOnlyLetters)
@@ -20,17 +19,19 @@ namespace Algorithms.Playfair
         protected override string PreparePlaintext(string plaintext)
         {
             var newText = new StringBuilder(plaintext.Length);
+            
             char extraLetter = 'X';
-            int lastLetterIndex = 0;
-            int length = 0;
+            char secondExtraLetter = 'Z';
             char lastLetter = ' ';
+
+            int length = 0;
+            int lastLetterIndex = 0;
 
             for (int i = 0; i < plaintext.Length; i++)
             {
-                if (lettersToDiscard.Contains(plaintext[i]))
+                if (!char.IsLetter(plaintext[i]) && !leaveOnlyLetters)
                 {
-                    if (!leaveOnlyLetters)
-                        newText.Append(plaintext[i]);
+                    newText.Append(plaintext[i]);
                 }
                 else if (char.IsLetter(plaintext[i]))
                 {
@@ -41,7 +42,11 @@ namespace Algorithms.Playfair
 
                     if(letter == lastLetter)
                     {
-                        newText.Append(extraLetter);
+                        var letterToAppend = extraLetter;
+                        if(letter == letterToAppend)
+                            letterToAppend = secondExtraLetter;
+
+                        newText.Append(letterToAppend);
                         length++;
                     }
 
@@ -51,15 +56,19 @@ namespace Algorithms.Playfair
                 }
             }
             
-            if(leaveOnlyLetters)
+            if(length % 2 != 0)
             {
-                if (length % 2 != 0)
-                    newText.Insert(newText.Length, extraLetter);
-            }
-            else
-            {
-                if (length % 2 != 0)
-                    newText.Insert(lastLetterIndex + 1, extraLetter);
+                var index = lastLetterIndex + 1;
+                if (leaveOnlyLetters)
+                    index = newText.Length;
+
+                var letter = newText[index - 1];
+                var letterToAppend = extraLetter;
+
+                if (letter == letterToAppend)
+                    letterToAppend = secondExtraLetter;
+
+                newText.Insert(index, letterToAppend);
             }
 
             return newText.ToString();
@@ -68,7 +77,7 @@ namespace Algorithms.Playfair
         protected override string Decode(string text, int shift)
         {
             var decoded = new StringBuilder();
-            var tmpSb = new StringBuilder();
+            var nonLetterCharacters = new StringBuilder();
             int add = 2;
             int firstIndex = -1;
             int secondIndex = -1;
@@ -80,10 +89,10 @@ namespace Algorithms.Playfair
             {
                 if(!leaveOnlyLetters)
                 {
-                    if (lettersToDiscard.Contains(text[i]))
+                    if (!char.IsLetter(text[i]))
                     {
                         if (firstIndex != -1)
-                            tmpSb.Append(text[i]);
+                            nonLetterCharacters.Append(text[i]);
                         else
                             decoded.Append(text[i]);
 
@@ -137,10 +146,10 @@ namespace Algorithms.Playfair
 
                 decoded.Append(firstEncrypted);
 
-                if(tmpSb.Length > 0)
+                if(nonLetterCharacters.Length > 0)
                 {
-                    decoded.Append(tmpSb);
-                    tmpSb.Clear();
+                    decoded.Append(nonLetterCharacters);
+                    nonLetterCharacters.Clear();
                 }
 
                 decoded.Append(secondEncrypted);
