@@ -25,50 +25,89 @@ namespace Algorithms.Playfair
             char lastLetter = ' ';
 
             int length = 0;
-            int lastLetterIndex = 0;
+            int lastLetterIndex = -1;
+            int firstLetterIndex = -1;
+            int secondLetterIndex = -1;
 
-            for (int i = 0; i < plaintext.Length; i++)
+            int index = 0;
+            var nonLetterCharacters = new StringBuilder();
+            while(index < plaintext.Length)
             {
-                if (!char.IsLetter(plaintext[i]) && !leaveOnlyLetters)
+                if(!char.IsLetter(plaintext[index]) && !leaveOnlyLetters)
                 {
-                    newText.Append(plaintext[i]);
+                    if(firstLetterIndex != -1)
+                        nonLetterCharacters.Append(plaintext[index]);
+                    else
+                        newText.Append(plaintext[index]);
                 }
-                else if (char.IsLetter(plaintext[i]))
+                else if(char.IsLetter(plaintext[index]))
                 {
-                    lastLetterIndex = i;
-                    var letter = plaintext[i];
-                    if(lettersToReplace.ContainsKey(letter))
-                        letter = lettersToReplace[letter];
+                    lastLetterIndex = newText.Length;
+                    lastLetter = plaintext[index];
+                    if(firstLetterIndex == -1)
+                    {
+                        firstLetterIndex = index;
+                        index++;
+                        continue;
+                    }
 
-                    if(letter == lastLetter)
+                    if(secondLetterIndex == -1)
+                        secondLetterIndex = index;
+
+                    newText.Append(plaintext[firstLetterIndex]);
+                    if (nonLetterCharacters.Length > 0)
+                    {
+                        newText.Append(nonLetterCharacters);
+                        nonLetterCharacters.Clear();
+                    }
+
+                    if (plaintext[firstLetterIndex] == plaintext[secondLetterIndex])
                     {
                         var letterToAppend = extraLetter;
-                        if(letter == letterToAppend)
+                        if (plaintext[firstLetterIndex] == letterToAppend)
                             letterToAppend = secondExtraLetter;
 
                         newText.Append(letterToAppend);
-                        length++;
+                        firstLetterIndex = secondLetterIndex;
+                        secondLetterIndex = -1;
+                    }
+                    else
+                    {
+                        newText.Append(plaintext[secondLetterIndex]);
+                        firstLetterIndex = -1;
+                        secondLetterIndex = -1;
                     }
 
-                    newText.Append(letter);
-                    lastLetter = letter;
-                    length++;
+                    length += 2;
                 }
-            }
-            
-            if(length % 2 != 0)
-            {
-                var index = lastLetterIndex + 1;
-                if (leaveOnlyLetters)
-                    index = newText.Length;
 
-                var letter = newText[index - 1];
+                index++;
+            }
+
+            if(firstLetterIndex != -1)
+            {
+                newText.Insert(lastLetterIndex, lastLetter);
+
+                if(nonLetterCharacters.Length > 0)
+                    newText.Append(nonLetterCharacters);
+
+                lastLetterIndex++;
+                length++;
+            }
+
+            if (length % 2 != 0)
+            {
+                var indexToAppend = lastLetterIndex;
+                if (leaveOnlyLetters)
+                    indexToAppend = newText.Length;
+
+                var letter = newText[indexToAppend - 1];
                 var letterToAppend = extraLetter;
 
                 if (letter == letterToAppend)
                     letterToAppend = secondExtraLetter;
 
-                newText.Insert(index, letterToAppend);
+                newText.Insert(indexToAppend, letterToAppend);
             }
 
             return newText.ToString();

@@ -15,13 +15,13 @@ namespace Algorithms.Playfair
 
         public string Encipher(string plaintext)
         {
-            plaintext = PreparePlaintext(plaintext.ToUpper());
+            plaintext = PreparePlaintext(plaintext.ToUpper().Trim());
             return Decode(plaintext, 1);
         }
 
         public string Decipher(string cipher)
         {
-            return Decode(cipher.ToUpper(), -1);
+            return Decode(cipher.ToUpper().Trim(), -1);
         }
 
         public void GenerateKeyTable(string key)
