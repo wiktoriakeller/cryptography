@@ -84,6 +84,13 @@ namespace Algorithms.Playfair
                         letterToAppend = secondExtraLetter;
 
                     preparedText.Append(letterToAppend);
+
+                    if (index + 1 == clearedText.Length)
+                    {
+                        preparedText.Append(clearedText[index]);
+                        length++;
+                    }
+
                     index += 1;
                 }
                 else
