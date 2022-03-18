@@ -7,5 +7,6 @@
         public char[,] Table { get; }
         public Position GetPosition(char c);
         public char GetLetter(int row, int col);
+        public bool LetterExist(char letter);
     }
 }

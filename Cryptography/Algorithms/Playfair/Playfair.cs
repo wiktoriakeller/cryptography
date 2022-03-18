@@ -9,7 +9,6 @@ namespace Algorithms.Playfair
         public Playfair(IKeyTable table) : base(table)
         {
             leaveOnlyLetters = true;
-            lettersToDiscard = new HashSet<char>() { ' ', '.', ',', '!', '(', ')', '?', '-', ':', ';' };
         }
 
         public void LeaveOnlyLetters(bool leaveOnlyLetters)
@@ -20,32 +19,96 @@ namespace Algorithms.Playfair
         protected override string PreparePlaintext(string plaintext)
         {
             var newText = new StringBuilder(plaintext.Length);
+            
             char extraLetter = 'X';
-            int lastLetterIndex = 0;
-            int length = 0;
+            char secondExtraLetter = 'Z';
+            char lastLetter = ' ';
 
-            for(int i = 0; i < plaintext.Length; i++)
+            int length = 0;
+            int lastLetterIndex = -1;
+            int firstLetterIndex = -1;
+            int secondLetterIndex = -1;
+
+            int index = 0;
+            var nonLetterCharacters = new StringBuilder();
+            while(index < plaintext.Length)
             {
-                if(lettersToDiscard.Contains(plaintext[i]))
+                if(!char.IsLetter(plaintext[index]) && !leaveOnlyLetters)
                 {
-                    if(!leaveOnlyLetters)
-                        newText.Append(plaintext[i]);
+                    if(firstLetterIndex != -1)
+                        nonLetterCharacters.Append(plaintext[index]);
+                    else
+                        newText.Append(plaintext[index]);
                 }
-                else if(lettersToReplace.ContainsKey(plaintext[i]))
+                else if(char.IsLetter(plaintext[index]))
                 {
-                    newText.Append(lettersToReplace[plaintext[i]]);
-                    length++;
+                    lastLetterIndex = newText.Length;
+                    lastLetter = plaintext[index];
+                    if(firstLetterIndex == -1)
+                    {
+                        firstLetterIndex = index;
+                        index++;
+                        continue;
+                    }
+
+                    if(secondLetterIndex == -1)
+                        secondLetterIndex = index;
+
+                    newText.Append(plaintext[firstLetterIndex]);
+                    if (nonLetterCharacters.Length > 0)
+                    {
+                        newText.Append(nonLetterCharacters);
+                        nonLetterCharacters.Clear();
+                    }
+
+                    if (plaintext[firstLetterIndex] == plaintext[secondLetterIndex])
+                    {
+                        var letterToAppend = extraLetter;
+                        if (plaintext[firstLetterIndex] == letterToAppend)
+                            letterToAppend = secondExtraLetter;
+
+                        newText.Append(letterToAppend);
+                        firstLetterIndex = secondLetterIndex;
+                        secondLetterIndex = -1;
+                    }
+                    else
+                    {
+                        newText.Append(plaintext[secondLetterIndex]);
+                        firstLetterIndex = -1;
+                        secondLetterIndex = -1;
+                    }
+
+                    length += 2;
                 }
-                else if(char.IsLetter(plaintext[i]))
-                {
-                    newText.Append(plaintext[i]);
-                    lastLetterIndex = i;
-                    length++;
-                }
+
+                index++;
+            }
+
+            if(firstLetterIndex != -1)
+            {
+                newText.Insert(lastLetterIndex, lastLetter);
+
+                if(nonLetterCharacters.Length > 0)
+                    newText.Append(nonLetterCharacters);
+
+                lastLetterIndex++;
+                length++;
             }
 
             if (length % 2 != 0)
-                newText.Insert(lastLetterIndex + 1, extraLetter);
+            {
+                var indexToAppend = lastLetterIndex;
+                if (leaveOnlyLetters)
+                    indexToAppend = newText.Length;
+
+                var letter = newText[indexToAppend - 1];
+                var letterToAppend = extraLetter;
+
+                if (letter == letterToAppend)
+                    letterToAppend = secondExtraLetter;
+
+                newText.Insert(indexToAppend, letterToAppend);
+            }
 
             return newText.ToString();
         }
@@ -53,7 +116,7 @@ namespace Algorithms.Playfair
         protected override string Decode(string text, int shift)
         {
             var decoded = new StringBuilder();
-            var tmpSb = new StringBuilder();
+            var nonLetterCharacters = new StringBuilder();
             int add = 2;
             int firstIndex = -1;
             int secondIndex = -1;
@@ -65,10 +128,10 @@ namespace Algorithms.Playfair
             {
                 if(!leaveOnlyLetters)
                 {
-                    if (lettersToDiscard.Contains(text[i]))
+                    if (!char.IsLetter(text[i]))
                     {
                         if (firstIndex != -1)
-                            tmpSb.Append(text[i]);
+                            nonLetterCharacters.Append(text[i]);
                         else
                             decoded.Append(text[i]);
 
@@ -122,10 +185,10 @@ namespace Algorithms.Playfair
 
                 decoded.Append(firstEncrypted);
 
-                if(tmpSb.Length > 0)
+                if(nonLetterCharacters.Length > 0)
                 {
-                    decoded.Append(tmpSb);
-                    tmpSb.Clear();
+                    decoded.Append(nonLetterCharacters);
+                    nonLetterCharacters.Clear();
                 }
 
                 decoded.Append(secondEncrypted);

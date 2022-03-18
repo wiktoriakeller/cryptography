@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Algorithms": {
+      "commandName": "Project",
+      "commandLineArgs": "normal decrypt playfair PRMG GTTN RYYQNCBYY REIKGCO."
+    }
+  }
+}
