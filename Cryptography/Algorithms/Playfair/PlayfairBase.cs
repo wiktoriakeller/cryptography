@@ -2,7 +2,7 @@
 
 namespace Algorithms.Playfair
 {
-    public abstract class PlayfairBase : IEncipher, IDecipher, IGenerateKeyTable
+    public abstract class PlayfairBase : ICryptographyAlgorithm, IGenerateKeyTable
     {
         protected IDictionary<char, char> lettersToReplace;
         protected IKeyTable keyTable;

@@ -5,7 +5,7 @@ using CryptographyAPI.Models;
 
 namespace CryptographyAPI.Controllers
 {
-    [Route("api/playfair")]
+    [Route("api/[controller]")]
     public class PlayfairController : Controller
     {
         private Playfair playfair;
