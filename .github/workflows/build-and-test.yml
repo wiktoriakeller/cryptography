@@ -33,4 +33,4 @@ jobs:
       run: dotnet build Cryptography --configuration Release --no-restore
     
     - name: Test
-      run: dotnet test Cryptography/Algorithms.Tests --no-build --verbosity normal
+      run: dotnet test Cryptography --no-build --verbosity normal
